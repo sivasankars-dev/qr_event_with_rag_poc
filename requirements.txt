@@ -1,0 +1,15 @@
+fastapi
+uvicorn[standard]
+qrcode[pil]
+pillow
+pyzbar
+opencv-python
+python-multipart
+sqlalchemy>=2.0
+psycopg[binary]>=3.1
+jinja2
+python-dotenv
+pydantic_settings
+psycopg[binary]
+chromadb
+openai

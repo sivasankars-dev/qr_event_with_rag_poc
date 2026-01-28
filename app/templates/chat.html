@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Event Organizer Chat</title>
+    <style>
+        body { font-family: Arial; margin: 40px; }
+        #chat-box { border: 1px solid #ccc; padding: 15px; height: 300px; overflow-y: auto; }
+        .user { color: blue; margin: 8px 0; }
+        .bot { color: green; margin: 8px 0; }
+    </style>
+</head>
+<body>
+
+<h2>Event Organizer Chat</h2>
+
+<div id="chat-box"></div>
+
+<input id="question" placeholder="Ask something..." style="width: 70%;">
+<button onclick="send()">Send</button>
+
+<script>
+async function send() {
+    const q = document.getElementById("question").value;
+    if (!q) return;
+
+    document.getElementById("chat-box").innerHTML +=
+        `<div class="user"><b>You:</b> ${q}</div>`;
+
+    const res = await fetch("/chat/{{ event_id }}", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ question: q })
+    });
+
+    const data = await res.json();
+
+    document.getElementById("chat-box").innerHTML +=
+        `<div class="bot"><b>Bot:</b> ${data.answer}</div>`;
+
+    document.getElementById("question").value = "";
+}
+</script>
+
+</body>
+</html>
