@@ -2,29 +2,175 @@
 <html>
 <head>
     <title>Event Organizer Chat</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
     <style>
-        body { font-family: Arial; margin: 40px; }
-        #chat-box { border: 1px solid #ccc; padding: 15px; height: 300px; overflow-y: auto; }
-        .user { color: blue; margin: 8px 0; }
-        .bot { color: green; margin: 8px 0; }
+        body {
+            font-family: "Inter", system-ui, Arial, sans-serif;
+            background: linear-gradient(135deg, #eef2ff, #f8fafc);
+            margin: 0;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .chat-container {
+            background: #fff;
+            width: 720px;
+            height: 750px;
+            border-radius: 16px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        .chat-header {
+            background: #4f46e5;
+            color: white;
+            padding: 16px;
+            font-size: 18px;
+            font-weight: 600;
+            text-align: center;
+        }
+
+        #chat-box {
+            flex: 1;
+            padding: 16px;
+            background: #f9fafb;
+            overflow-y: auto;
+        }
+
+        .message {
+            max-width: 75%;
+            padding: 10px 14px;
+            margin-bottom: 12px;
+            border-radius: 12px;
+            font-size: 14px;
+            line-height: 1.4;
+        }
+
+        .user {
+            background: #e0e7ff;
+            color: #1e3a8a;
+            margin-left: auto;
+            border-bottom-right-radius: 4px;
+        }
+
+        .bot {
+            background: #ecfdf5;
+            color: #065f46;
+            margin-right: auto;
+            border-bottom-left-radius: 4px;
+        }
+
+        /* 👇 Thinking indicator */
+        .thinking {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            background: #ecfdf5;
+            color: #065f46;
+            padding: 8px 12px;
+            border-radius: 12px;
+            font-size: 13px;
+            width: fit-content;
+            margin-bottom: 12px;
+            animation: fade 1.2s infinite;
+        }
+
+        .dots span {
+            animation: blink 1.4s infinite both;
+        }
+
+        .dots span:nth-child(2) {
+            animation-delay: 0.2s;
+        }
+
+        .dots span:nth-child(3) {
+            animation-delay: 0.4s;
+        }
+
+        @keyframes blink {
+            0% { opacity: 0.2; }
+            20% { opacity: 1; }
+            100% { opacity: 0.2; }
+        }
+
+        @keyframes fade {
+            0% { opacity: 0.7; }
+            50% { opacity: 1; }
+            100% { opacity: 0.7; }
+        }
+
+        .chat-input {
+            display: flex;
+            padding: 12px;
+            gap: 8px;
+            border-top: 1px solid #e5e7eb;
+        }
+
+        textarea {
+            flex: 1;
+            resize: none;
+            border-radius: 10px;
+            border: 1px solid #d1d5db;
+            padding: 10px;
+            font-size: 14px;
+            outline: none;
+        }
+
+        button {
+            background: #4f46e5;
+            color: white;
+            border: none;
+            border-radius: 10px;
+            padding: 0 18px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background: #4338ca;
+        }
     </style>
 </head>
 <body>
 
-<h2>Event Organizer Chat</h2>
+<div class="chat-container">
+    <div class="chat-header">🎟️ Event Organizer Chat</div>
 
-<div id="chat-box"></div>
+    <div id="chat-box"></div>
 
-<input id="question" placeholder="Ask something..." style="width: 70%;">
-<button onclick="send()">Send</button>
+    <div class="chat-input">
+        <textarea id="question" placeholder="Ask something..."></textarea>
+        <button onclick="send()">Send</button>
+    </div>
+</div>
 
 <script>
 async function send() {
+    const chatBox = document.getElementById("chat-box");
     const q = document.getElementById("question").value;
     if (!q) return;
 
-    document.getElementById("chat-box").innerHTML +=
-        `<div class="user"><b>You:</b> ${q}</div>`;
+    chatBox.innerHTML +=
+        `<div class="message user"><b>You:</b> ${q}</div>`;
+
+    // 👇 Thinking indicator
+    const thinkingDiv = document.createElement("div");
+    thinkingDiv.className = "thinking";
+    thinkingDiv.id = "thinking";
+    thinkingDiv.innerHTML = `
+        🤖 Thinking
+        <span class="dots">
+            <span>.</span><span>.</span><span>.</span>
+        </span>
+    `;
+    chatBox.appendChild(thinkingDiv);
+    chatBox.scrollTop = chatBox.scrollHeight;
+
+    document.getElementById("question").value = "";
 
     const res = await fetch("/chat/{{ event_id }}", {
         method: "POST",
@@ -34,10 +180,13 @@ async function send() {
 
     const data = await res.json();
 
-    document.getElementById("chat-box").innerHTML +=
-        `<div class="bot"><b>Bot:</b> ${data.answer}</div>`;
+    // Remove thinking indicator
+    thinkingDiv.remove();
 
-    document.getElementById("question").value = "";
+    chatBox.innerHTML +=
+        `<div class="message bot"><b>Bot:</b> ${data.answer}</div>`;
+
+    chatBox.scrollTop = chatBox.scrollHeight;
 }
 </script>
 
