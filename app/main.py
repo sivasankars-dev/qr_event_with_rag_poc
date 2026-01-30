@@ -87,6 +87,8 @@ def submit_form(
         metadatas=[{"event_id": int(event_id), "name": name}]
     )
 
+    chroma_client.persist()
+
     print("CHROMA COUNT:", collection.count())
 
     # Return thank you page
@@ -133,6 +135,7 @@ def organizer_chat(event_id: int, req: ChatRequest):
 
     prompt = f"""
     You are an assistant answering ONLY from event participant data.
+    if participant asked improvision tips or guide provide that.
 
     Participant inputs:
     {context}
