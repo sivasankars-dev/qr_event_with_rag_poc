@@ -12,7 +12,7 @@ from app.chroma import collection
 from app.schemas import ChatRequest
 
 
-APP_HOST = os.getenv("APP_HOST", "http://192.168.1.2:8000")
+APP_HOST = os.getenv("APP_HOST", "http://192.168.1.3:8000")
 
 
 Base.metadata.create_all(bind=engine)
@@ -86,8 +86,6 @@ def submit_form(
         ids=[str(submission.id)],
         metadatas=[{"event_id": int(event_id), "name": name}]
     )
-
-    chroma_client.persist()
 
     print("CHROMA COUNT:", collection.count())
 
