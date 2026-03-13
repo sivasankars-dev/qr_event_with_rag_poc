@@ -49,6 +49,8 @@
             border-radius: 12px;
             font-size: 14px;
             line-height: 1.4;
+            white-space: pre-wrap;
+            word-break: break-word;
         }
 
         .user {
@@ -149,13 +151,26 @@
 </div>
 
 <script>
+function addMessage(role, text) {
+    const chatBox = document.getElementById("chat-box");
+    const wrapper = document.createElement("div");
+    wrapper.className = `message ${role}`;
+
+    const label = document.createElement("b");
+    label.textContent = role === "user" ? "You: " : "Bot: ";
+
+    wrapper.appendChild(label);
+    wrapper.appendChild(document.createTextNode(text));
+    chatBox.appendChild(wrapper);
+    chatBox.scrollTop = chatBox.scrollHeight;
+}
+
 async function send() {
     const chatBox = document.getElementById("chat-box");
     const q = document.getElementById("question").value;
     if (!q) return;
 
-    chatBox.innerHTML +=
-        `<div class="message user"><b>You:</b> ${q}</div>`;
+    addMessage("user", q);
 
     // 👇 Thinking indicator
     const thinkingDiv = document.createElement("div");
@@ -183,10 +198,7 @@ async function send() {
     // Remove thinking indicator
     thinkingDiv.remove();
 
-    chatBox.innerHTML +=
-        `<div class="message bot"><b>Bot:</b> ${data.answer}</div>`;
-
-    chatBox.scrollTop = chatBox.scrollHeight;
+    addMessage("bot", data.answer || "No response.");
 }
 </script>
 
