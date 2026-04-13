@@ -12,7 +12,7 @@ from app.chroma import collection
 from app.schemas import ChatRequest
 
 
-APP_HOST = os.getenv("APP_HOST", "http://192.168.1.3:8000")
+APP_HOST = os.getenv("APP_HOST", "http://192.168.1.2:8000")
 TOP_K = int(os.getenv("TOP_K", "8"))
 
 
@@ -50,7 +50,9 @@ def generate_qr(request: Request, event_id: int):
 def show_form(request: Request, event_id: int):
     print("show form", request)
     return templates.TemplateResponse(
-        "form.html", {"request": request, "event_id": event_id}
+        request,
+        "form.html",
+        {"request": request, "event_id": event_id},
     )
 
 
@@ -81,8 +83,12 @@ def submit_form(
 
     # Return thank you page
     return templates.TemplateResponse(
+        request,
         "thank_you.html",
-        {"request": request, "event_id": event_id},  # You can pass more data if needed
+        {
+            "request": request,
+            "event_id": event_id,  # You can pass more data if needed
+        },
     )
 
 
@@ -97,7 +103,9 @@ def total_registrations(event_id: int):
 @app.get("/organizer/chat/{event_id}", response_class=HTMLResponse)
 def organizer_chat_ui(request: Request, event_id: int):
     return templates.TemplateResponse(
-        "chat.html", {"request": request, "event_id": event_id}
+        request,
+        "chat.html",
+        {"request": request, "event_id": event_id},
     )
 
 
